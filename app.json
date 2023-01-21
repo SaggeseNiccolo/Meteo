@@ -2,14 +2,14 @@
   "expo": {
     "name": "Meteo",
     "slug": "Meteo",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/iconnn.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/iconnn.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#FFFFFF"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
@@ -21,13 +21,22 @@
       "supportsTablet": true
     },
     "android": {
+      "blockedPermisions": [
+        "android.permission.ACCESS_FINE_LOCATION"
+      ],
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/iconnn.png",
         "backgroundColor": "#FFFFFF"
-      }
+      },
+      "package": "com.niccoloo.Meteo"
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/iconnn.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "6472dce1-011c-4f4d-92df-a7f8b94d4a7c"
+      }
     }
   }
 }
