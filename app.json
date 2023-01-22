@@ -4,10 +4,10 @@
     "slug": "Meteo",
     "version": "1.1.0",
     "orientation": "portrait",
-    "icon": "./assets/iconnn.png",
+    "icon": "./assets/ico.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/iconnn.png",
+      "image": "./assets/ico.png",
       "resizeMode": "contain",
       "backgroundColor": "#FFFFFF"
     },
@@ -26,13 +26,13 @@
         "android.permission.ACCESS_FINE_LOCATION"
       ],
       "adaptiveIcon": {
-        "foregroundImage": "./assets/iconnn.png",
+        "foregroundImage": "./assets/ico.png",
         "backgroundColor": "#FFFFFF"
       },
       "package": "com.niccoloo.Meteo"
     },
     "web": {
-      "favicon": "./assets/iconnn.png"
+      "favicon": "./assets/ico.png"
     },
     "extra": {
       "eas": {
