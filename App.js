@@ -8,6 +8,7 @@ export default function App() {
 	const [weatherData, setWeatherData] = useState(null);
 	const [hourlyData, setHourlyData] = useState(null);
 	const [city, setCity] = useState(null);
+	const [name, setName] = useState(null);
 	const inputRef = useRef();
 
 	useEffect(() => {
@@ -18,11 +19,20 @@ export default function App() {
 			}
 
 			await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced }).then((location) => {
+				setCityName(location.coords.latitude, location.coords.longitude);
 				fetchWeatherData(location.coords.latitude, location.coords.longitude);
 			});
 
 		})();
 	}, []);
+
+	const setCityName = async (lat, lon) => {
+		const response = await fetch(`http://api.openweathermap.org/geo/1.0/reverse?lat=${lat}&lon=${lon}&limit=1&appid=e57546012b1cb7c284f9861fdc3bc5bf`);
+
+		await response.json().then((data) => {
+			setName(data[0].local_names.it);
+		});
+	};
 
 	const handleLocation = async (city) => {
 		const response = await fetch(`http://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=1&appid=e57546012b1cb7c284f9861fdc3bc5bf`);
@@ -35,9 +45,9 @@ export default function App() {
 	const fetchWeatherData = async (lat, lon) => {
 		try {
 			const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&lang=it&appid=e57546012b1cb7c284f9861fdc3bc5bf&units=metric`);
-			const data = await response.json();
-			setWeatherData(data);
-			console.log(weatherData);
+			const data = await response.json().then((data) => {
+				setWeatherData(data);
+			});
 		}
 		catch (error) {
 			console.error(error);
@@ -54,6 +64,7 @@ export default function App() {
 
 	const handleSearch = () => {
 		setCity(city);
+		setName(city)
 		handleLocation(city);
 
 		inputRef.current.clear();
@@ -128,7 +139,7 @@ export default function App() {
 
 	return (
 		<SafeAreaView className="flex-1 items-center justify-center">
-			<Text className="absolute top-4 font-bold text-3xl mb-1">{weatherData.name}, {weatherData.sys.country}</Text>
+			<Text className="absolute top-4 font-bold text-3xl mb-1">{name}, {weatherData.sys.country}</Text>
 			<View className="absolute bottom-72 items-center">
 				<Text className="">{getWeatherIcon(weatherData.weather[0].main, 84)}</Text>
 				<View className="flex-row">
