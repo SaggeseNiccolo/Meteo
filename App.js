@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Text, StatusBar, View, SafeAreaView, TextInput, TouchableOpacity, Keyboard, ScrollView, Image, ImageBackground, useWindowDimensions, StyleSheet } from 'react-native';
+import { Text, StatusBar, View, SafeAreaView, TextInput, TouchableOpacity, Keyboard, ScrollView, Image, ImageBackground, useWindowDimensions, StyleSheet, KeyboardAvoidingView } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Forecast from './components/Forecast';
 import * as Location from 'expo-location';
@@ -11,7 +11,8 @@ export default function App() {
 	const [name, setName] = useState(null);
 	const inputRef = useRef();
 
-	const { width: windowWidth, heigth: windowHeight } = useWindowDimensions();
+	const screenHeight = useWindowDimensions().height + 16;
+	const screenWidth = useWindowDimensions().width;
 
 	useEffect(() => {
 		(async () => {
@@ -45,10 +46,8 @@ export default function App() {
 	const fetchWeatherData = async (lat, lon) => {
 		try {
 			const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&lang=it&appid=e57546012b1cb7c284f9861fdc3bc5bf&units=metric`);
-			const data = await response.json().then((data) => {
+			await response.json().then((data) => {
 				setWeatherData(data);
-			}).catch((error) => {
-				setWeatherData(null);
 			});
 		}
 		catch (error) {
@@ -56,7 +55,7 @@ export default function App() {
 		}
 		try {
 			const response = await fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&lang=it&appid=e57546012b1cb7c284f9861fdc3bc5bf&units=metric&cnt=9`);
-			const data = await response.json().then((data) => {
+			await response.json().then((data) => {
 				setHourlyData(data);
 			});
 
@@ -119,11 +118,52 @@ export default function App() {
 		}
 	};
 
+	const getBackgroundImage = (icon) => {
+		switch (icon) {
+			case '01d':
+				return require("./assets/backgrounds/01d.jpg");
+			case '01n':
+				return require("./assets/backgrounds/01n.jpg");
+			case '02d':
+				return require("./assets/backgrounds/01d.jpg");
+			case '02n':
+				return require("./assets/backgrounds/01n.jpg");
+			case '03d':
+				return require("./assets/backgrounds/01d.jpg");
+			case '03n':
+				return require("./assets/backgrounds/01n.jpg");
+			case '04d':
+				return require("./assets/backgrounds/01d.jpg");
+			case '04n':
+				return require("./assets/backgrounds/01n.jpg");
+			// case '09d':
+			// 	return require("./assets/backgrounds/09d.jpg");
+			// case '09n':
+			// 	return require("./assets/backgrounds/09n.jpg");
+			// case '10d':
+			// 	return require("./assets/backgrounds/10d.jpg");
+			// case '10n':
+			// 	return require("./assets/backgrounds/10n.jpg");
+			// case '11d':
+			// 	return require("./assets/backgrounds/11d.jpg");
+			// case '11n':
+			// 	return require("./assets/backgrounds/11n.jpg");
+			// case '13d':
+			// 	return require("./assets/backgrounds/13d.jpg");
+			// case '13n':
+			// 	return require("./assets/backgrounds/13n.jpg");
+			// case '50d':
+			// 	return require("./assets/backgrounds/50d.jpg");
+			// case '50n':
+			// 	return require("./assets/backgrounds/50n.jpg");
+			default:
+				return require("./assets/backgrounds/09.jpg");
+		}
+	};
+
 	if (weatherData === null) {
 		return (
-			<SafeAreaView className="flex-1 items-center justify-center">
-				{/* <Text className="text-xl mb-5">Caricamento in corso...</Text> */}
-			</SafeAreaView>
+			<SafeAreaView className="flex-1 items-center justify-center" />
 		);
 	}
 
@@ -143,56 +183,69 @@ export default function App() {
 
 	if (hourlyData === null || hourlyData.cod != '200') {
 		return (
-			<SafeAreaView className="flex-1 items-center justify-center">
-				<Text className="text-xl mb-5">Caricamento in corso...</Text>
-			</SafeAreaView>
+			<SafeAreaView className="flex-1 items-center justify-center" />
 		);
 	}
 
 	return (
-		<>
-			<StatusBar style="" />
-			<View style={{
-				width: windowWidth,
-				height: windowHeight,
-				backgroundColor: '#555',
+		<View style={{
+			width: screenWidth,
+			height: screenHeight,
+		}}>
+			<ImageBackground source={getBackgroundImage(weatherData.weather[0].icon)} blurRadius={0} style={{
+				flex: 1,
 			}}>
-				{/* <ImageBackground source={require("./assets/backgrounds/cloudy.jpeg")} style={{ flex: 1 }} /> */}
-			</View>
-			<SafeAreaView className="flex-1 items-center justify-center" style={{
-				// backgroundImage: `url("./assets/backgrounds/sunny.jpeg")`,
-				backgroundColor: '#f5f5f5',
-			}}>
-				<Text className="absolute top-6 font-medium text-4xl">{name}</Text>
-				{/* <TouchableOpacity className="absolute right-4 top-3 p-2 rounded-full" onPress={handleSearch}>
-					<Icon name="navigate" size={26} />
-				</TouchableOpacity> */}
-				<Text className="h-52 mb-6 bottom-6">{getIcon(weatherData.weather[0].icon, 140)}</Text>
-				<View className="items-center mb-40 bottom-2">
-					<View className="flex-row">
-						<Text className="text-8xl">{Math.round(weatherData.main.temp)}</Text>
-						<Text className="font-bold text-lg">°C</Text>
+				<StatusBar />
+				<SafeAreaView className="flex-1 items-center justify-center" style={{
+					backgroundColor: 'rgba(0,0,0,0.3)',
+				}}>
+					<Text className="absolute top-6 font-medium text-4xl text-white" style={shadow}>{name}
+						{/* , {weatherData.sys.country} */}
+					</Text>
+					{/* <TouchableOpacity className="absolute right-4 top-3 p-2 rounded-full" onPress={handleSearch}>
+						<Icon name="navigate" size={26} />
+					</TouchableOpacity> */}
+					<Text className="h-52 mb-6 bottom-6">{getIcon(weatherData.weather[0].icon, 140)}</Text>
+					<View className="items-center mb-40 bottom-2">
+						<View className="flex-row">
+							<Text className="text-8xl text-white" style={shadow}>{Math.round(weatherData.main.temp)}</Text>
+							<Text className="font-bold text-lg text-white" style={shadow}>°C</Text>
+						</View>
+						<Text className="text-lg first-letter:capitalize bottom-4 text-white" style={shadow}>{weatherData.weather[0].description}</Text>
 					</View>
-					<Text className="text-lg first-letter:capitalize bottom-4">{weatherData.weather[0].description}</Text>
-				</View>
-				<ScrollView className="absolute flex-row bottom-20" snapToInterval={100} horizontal showsHorizontalScrollIndicator={false} decelerationRate={0} snapToAlignment="start">
-					<Forecast temp={Math.round(hourlyData.list[0].main.temp)} icon={getIcon(hourlyData.list[0].weather[0].icon, 40)} hour={hourlyData.list[0].dt_txt} />
-					<Forecast temp={Math.round(hourlyData.list[1].main.temp)} icon={getIcon(hourlyData.list[1].weather[0].icon, 40)} hour={hourlyData.list[1].dt_txt} />
-					<Forecast temp={Math.round(hourlyData.list[2].main.temp)} icon={getIcon(hourlyData.list[2].weather[0].icon, 40)} hour={hourlyData.list[2].dt_txt} />
-					<Forecast temp={Math.round(hourlyData.list[3].main.temp)} icon={getIcon(hourlyData.list[3].weather[0].icon, 40)} hour={hourlyData.list[3].dt_txt} />
-					<Forecast temp={Math.round(hourlyData.list[4].main.temp)} icon={getIcon(hourlyData.list[4].weather[0].icon, 40)} hour={hourlyData.list[4].dt_txt} />
-					<Forecast temp={Math.round(hourlyData.list[5].main.temp)} icon={getIcon(hourlyData.list[5].weather[0].icon, 40)} hour={hourlyData.list[5].dt_txt} />
-					<Forecast temp={Math.round(hourlyData.list[6].main.temp)} icon={getIcon(hourlyData.list[6].weather[0].icon, 40)} hour={hourlyData.list[6].dt_txt} />
-					<Forecast temp={Math.round(hourlyData.list[7].main.temp)} icon={getIcon(hourlyData.list[7].weather[0].icon, 40)} hour={hourlyData.list[7].dt_txt} />
-					<Forecast temp={Math.round(hourlyData.list[8].main.temp)} icon={getIcon(hourlyData.list[8].weather[0].icon, 40)} hour={hourlyData.list[8].dt_txt} />
-				</ScrollView>
-				<View className="absolute flex-row bottom-4 w-11/12 bg-gray-400 rounded-full">
-					<TextInput className="flex-1 my-2 px-5 text-lg text-white" placeholder="Cerca città" onChangeText={(newCity) => setCity(newCity)} onSubmitEditing={handleSearch} ref={inputRef} />
-					<TouchableOpacity className="w-6 justify-center mr-3" onPress={handleSearch}>
-						<Icon name="search" size={24} color="white" />
-					</TouchableOpacity>
-				</View>
-			</SafeAreaView>
-		</>
+					<ScrollView className="absolute flex-row bottom-20 bg-gray-400 rounded-3xl mx-3" snapToInterval={90} horizontal showsHorizontalScrollIndicator={false} decelerationRate={0} snapToAlignment="start" style={{
+						backgroundColor: 'rgba(0,0,0,0.4)',
+					}}>
+						<Forecast temp={Math.round(hourlyData.list[0].main.temp)} icon={getIcon(hourlyData.list[0].weather[0].icon, 40)} hour={hourlyData.list[0].dt_txt} />
+						<Forecast temp={Math.round(hourlyData.list[1].main.temp)} icon={getIcon(hourlyData.list[1].weather[0].icon, 40)} hour={hourlyData.list[1].dt_txt} />
+						<Forecast temp={Math.round(hourlyData.list[2].main.temp)} icon={getIcon(hourlyData.list[2].weather[0].icon, 40)} hour={hourlyData.list[2].dt_txt} />
+						<Forecast temp={Math.round(hourlyData.list[3].main.temp)} icon={getIcon(hourlyData.list[3].weather[0].icon, 40)} hour={hourlyData.list[3].dt_txt} />
+						<Forecast temp={Math.round(hourlyData.list[4].main.temp)} icon={getIcon(hourlyData.list[4].weather[0].icon, 40)} hour={hourlyData.list[4].dt_txt} />
+						<Forecast temp={Math.round(hourlyData.list[5].main.temp)} icon={getIcon(hourlyData.list[5].weather[0].icon, 40)} hour={hourlyData.list[5].dt_txt} />
+						<Forecast temp={Math.round(hourlyData.list[6].main.temp)} icon={getIcon(hourlyData.list[6].weather[0].icon, 40)} hour={hourlyData.list[6].dt_txt} />
+						<Forecast temp={Math.round(hourlyData.list[7].main.temp)} icon={getIcon(hourlyData.list[7].weather[0].icon, 40)} hour={hourlyData.list[7].dt_txt} />
+						<Forecast temp={Math.round(hourlyData.list[8].main.temp)} icon={getIcon(hourlyData.list[8].weather[0].icon, 40)} hour={hourlyData.list[8].dt_txt} />
+					</ScrollView>
+					<KeyboardAvoidingView className="absolute flex-row bottom-4 w-11/12 bg-gray-400 rounded-full" behavior="height" enabled style={{
+						backgroundColor: 'rgba(0,0,0,0.4)',
+					}}>
+						<TextInput className="flex-1 my-2 px-5 text-lg text-white" placeholder="Cerca città" placeholderTextColor="white" onChangeText={(newCity) => setCity(newCity)} onSubmitEditing={handleSearch} ref={inputRef} />
+						<TouchableOpacity className="w-6 justify-center mr-3" onPress={handleSearch}>
+							<Icon name="search" size={24} color="white" />
+						</TouchableOpacity>
+					</KeyboardAvoidingView>
+				</SafeAreaView>
+			</ImageBackground>
+		</View>
 	);
 }
+
+const styles = StyleSheet.create({
+	shadow: {
+		textShadowColor: 'rgba(0, 0, 0, 1)',
+		textShadowOffset: { width: 1, height: 1 },
+		textShadowRadius: 10
+	}
+});
+
+const shadow = StyleSheet.compose(styles.shadow);
