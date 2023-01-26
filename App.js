@@ -11,7 +11,7 @@ export default function App() {
 	const [name, setName] = useState(null);
 	const inputRef = useRef();
 
-	const screenHeight = useWindowDimensions().height + 16;
+	const screenHeight = useWindowDimensions().height + 50;
 	const screenWidth = useWindowDimensions().width;
 
 	useEffect(() => {
@@ -30,6 +30,8 @@ export default function App() {
 	const setCityName = async (lat, lon) => {
 		const response = await fetch(`http://api.openweathermap.org/geo/1.0/reverse?lat=${lat}&lon=${lon}&limit=1&appid=e57546012b1cb7c284f9861fdc3bc5bf`);
 
+		console.log("setCityName");
+
 		await response.json().then((data) => {
 			setName(data[0].local_names.it);
 		});
@@ -44,6 +46,7 @@ export default function App() {
 	};
 
 	const fetchWeatherData = async (lat, lon) => {
+		console.log("fetchWeatherData");
 		try {
 			const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&lang=it&appid=e57546012b1cb7c284f9861fdc3bc5bf&units=metric`);
 			await response.json().then((data) => {
@@ -62,18 +65,6 @@ export default function App() {
 		}
 		catch (error) {
 			console.error(error);
-		}
-	};
-
-	const handleSearch = () => {
-		if (inputRef.current.value === '') { }
-		else {
-			setCity(city);
-			handleLocation(city);
-			setName(city)
-
-			inputRef.current.clear();
-			Keyboard.dismiss();
 		}
 	};
 
@@ -119,47 +110,81 @@ export default function App() {
 	};
 
 	const getBackgroundImage = (icon) => {
+		console.log(icon);
+		let rand;
+		
 		switch (icon) {
 			case '01d':
-				return require("./assets/backgrounds/01d.jpg");
-			case '01n':
-				return require("./assets/backgrounds/01n.jpg");
 			case '02d':
-				return require("./assets/backgrounds/01d.jpg");
+				// rand = Math.floor(Math.random() * 9);
+				// console.log(rand);
+				// if (rand == 0)
+				return require("./assets/backgrounds/sunny1.jpg");
+				// else if (rand == 1) return require("./assets/backgrounds/sunny2.jpg");
+				// else if (rand == 2) return require("./assets/backgrounds/sunny3.jpg");
+				// else if (rand == 3) return require("./assets/backgrounds/sunny4.jpg");
+				// else if (rand == 4) return require("./assets/backgrounds/sunny5.jpg");
+				// else if (rand == 5) return require("./assets/backgrounds/sunny6.jpg");
+				// else if (rand == 6) return require("./assets/backgrounds/sunny7.jpg");
+				// else if (rand == 7) return require("./assets/backgrounds/sunny8.jpg");
+				// else if (rand == 8) return require("./assets/backgrounds/sunny9.jpg");
+
+			case '01n':
 			case '02n':
-				return require("./assets/backgrounds/01n.jpg");
+				// rand = Math.floor(Math.random() * 2);
+				// if (rand == 0) return
+				require("./assets/backgrounds/night1.jpg");
+				// else if (rand == 1) return require("./assets/backgrounds/cloudynight.jpg");
+
 			case '03d':
-				return require("./assets/backgrounds/01d.jpg");
 			case '03n':
-				return require("./assets/backgrounds/01n.jpg");
 			case '04d':
-				return require("./assets/backgrounds/01d.jpg");
 			case '04n':
-				return require("./assets/backgrounds/01n.jpg");
-			// case '09d':
-			// 	return require("./assets/backgrounds/09d.jpg");
-			// case '09n':
-			// 	return require("./assets/backgrounds/09n.jpg");
-			// case '10d':
-			// 	return require("./assets/backgrounds/10d.jpg");
-			// case '10n':
-			// 	return require("./assets/backgrounds/10n.jpg");
-			// case '11d':
-			// 	return require("./assets/backgrounds/11d.jpg");
-			// case '11n':
-			// 	return require("./assets/backgrounds/11n.jpg");
-			// case '13d':
-			// 	return require("./assets/backgrounds/13d.jpg");
-			// case '13n':
-			// 	return require("./assets/backgrounds/13n.jpg");
-			// case '50d':
-			// 	return require("./assets/backgrounds/50d.jpg");
-			// case '50n':
-			// 	return require("./assets/backgrounds/50n.jpg");
-			default:
-				return require("./assets/backgrounds/09.jpg");
+				// rand = Math.floor(Math.random() * 4);
+				// if (rand == 0) return
+				require("./assets/backgrounds/cloudy1.jpg");
+				// else if (rand == 1) return require("./assets/backgrounds/cloudy2.jpg");
+				// else if (rand == 2) return require("./assets/backgrounds/cloudy3.jpg");
+				// else if (rand == 3) return require("./assets/backgrounds/cloudyfog.jpg");
+
+			case '09d':
+			case '09n':
+			case '10d':
+			case '10n':
+				return require("./assets/backgrounds/rainy.jpg");
+
+			case '11d':
+			case '11n':
+				// rand = Math.floor(Math.random() * 2);
+				// if (rand == 0)
+					return require("./assets/backgrounds/thunder1.jpg")
+				// else if (rand == 1) return require("./assets/backgrounds/thunder2.jpg");
+
+			case '13d':
+			case '13n':
+				return require("./assets/backgrounds/snowy.jpg");
+
+			case '50d':
+				return require("./assets/backgrounds/fog.jpg");
+
+			case '50n':
+				return require("./assets/backgrounds/cloudyfog.jpg");
 		}
 	};
+
+	const handleSearch = () => {
+		console.log("handleSearch");
+		if (inputRef.current.value === '') { }
+		else {
+			setName(city);
+			setCity(city);
+			handleLocation(city);
+
+			inputRef.current.clear();
+			Keyboard.dismiss();
+		}
+	};
+
 
 	if (weatherData === null) {
 		return (
@@ -193,11 +218,11 @@ export default function App() {
 			width: screenWidth,
 			height: screenHeight,
 		}}>
-			<StatusBar style="auto" />
-			<SafeAreaView className="flex-1 items-center justify-center" style={{
+			{/* // <StatusBar backgroundColor={"transparent"} /> */}
+			<SafeAreaView SafeAreaView className="flex-1 items-center justify-center" style={{
 				backgroundColor: 'rgba(0,0,0,0.3)',
 			}}>
-				<Text className="absolute top-6 font-medium text-4xl text-white" style={shadow}>{name}
+				<Text className="absolute top-10 font-medium text-4xl text-white" style={shadow}>{name}
 					{/* , {weatherData.sys.country} */}
 				</Text>
 				{/* <TouchableOpacity className="absolute right-4 top-3 p-2 rounded-full" onPress={handleSearch}>
@@ -227,13 +252,15 @@ export default function App() {
 				<View className="absolute flex-row bottom-4 w-11/12 rounded-full" style={{
 					backgroundColor: 'rgba(0,0,0,0.4)',
 				}}>
-					<TextInput className="flex-1 my-2 px-5 text-lg text-white" placeholder="Cerca città" placeholderTextColor="white" onChangeText={(newCity) => setCity(newCity)} onSubmitEditing={handleSearch} ref={inputRef} />
+					<TextInput className="flex-1 my-2 px-5 text-lg text-white" placeholder="Cerca città" placeholderTextColor="white"
+						onChangeText={(newCity) => setCity(newCity)}
+						onSubmitEditing={handleSearch} ref={inputRef} />
 					<TouchableOpacity className="w-6 justify-center mr-3" onPress={handleSearch}>
 						<Icon name="search" size={24} color="white" />
 					</TouchableOpacity>
 				</View>
-			</SafeAreaView>
-		</ImageBackground>
+			</SafeAreaView >
+		</ImageBackground >
 	);
 }
 
