@@ -111,8 +111,8 @@ export default function App() {
 
 	const getBackgroundImage = (icon) => {
 		console.log(icon);
-		let rand;
-		
+		// let rand;
+
 		switch (icon) {
 			case '01d':
 			case '02d':
@@ -131,9 +131,10 @@ export default function App() {
 
 			case '01n':
 			case '02n':
+				console.log("sono qui")
 				// rand = Math.floor(Math.random() * 2);
 				// if (rand == 0) return
-				require("./assets/backgrounds/night1.jpg");
+				return require("./assets/backgrounds/night1.jpg");
 				// else if (rand == 1) return require("./assets/backgrounds/cloudynight.jpg");
 
 			case '03d':
@@ -142,7 +143,7 @@ export default function App() {
 			case '04n':
 				// rand = Math.floor(Math.random() * 4);
 				// if (rand == 0) return
-				require("./assets/backgrounds/cloudy1.jpg");
+				return require("./assets/backgrounds/cloudy1.jpg");
 				// else if (rand == 1) return require("./assets/backgrounds/cloudy2.jpg");
 				// else if (rand == 2) return require("./assets/backgrounds/cloudy3.jpg");
 				// else if (rand == 3) return require("./assets/backgrounds/cloudyfog.jpg");
@@ -151,6 +152,7 @@ export default function App() {
 			case '09n':
 			case '10d':
 			case '10n':
+				console.log("sono quiRiany")
 				return require("./assets/backgrounds/rainy.jpg");
 
 			case '11d':
@@ -176,8 +178,8 @@ export default function App() {
 		console.log("handleSearch");
 		if (inputRef.current.value === '') { }
 		else {
-			setName(city);
 			setCity(city);
+			setName(city);
 			handleLocation(city);
 
 			inputRef.current.clear();
