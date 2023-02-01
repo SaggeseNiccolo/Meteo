@@ -11,7 +11,7 @@ export default function App() {
 	const [name, setName] = useState(null);
 	const inputRef = useRef();
 
-	const API_KEY = 'e57546012b1cb7c284f9861fdc3bc5bf';
+	const API_KEY = 'c77ad253e30870ec7de6ea19d30ffc5c';
 
 	const screenHeight = useWindowDimensions().height + 50;
 	const screenWidth = useWindowDimensions().width;
@@ -33,6 +33,7 @@ export default function App() {
 
 			await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced })
 				.then((location) => {
+					console.log(location.coords.latitude, location.coords.longitude);
 					setCityName(location.coords.latitude, location.coords.longitude);
 					fetchWeatherData(location.coords.latitude, location.coords.longitude);
 				});
@@ -80,7 +81,7 @@ export default function App() {
 			console.error(error);
 		}
 		try {
-			const response = await fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&lang=it&appid=${API_KEY}&units=metric&cnt=9`);
+			const response = await fetch(`https://pro.openweathermap.org/data/2.5/forecast/hourly?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric&cnt=24&lang=it`);
 			await response.json().then((data) => {
 				setHourlyData(data);
 			});
@@ -207,7 +208,7 @@ export default function App() {
 				style={{
 					backgroundColor: 'rgba(0,0,0,0.3)',
 				}}>
-				<Text className="absolute top-10 font-medium text-4xl text-white" style={shadow}>{name}
+				<Text className="absolute top-10 font-medium text-4xl text-white" style={styles.shadow}>{name}
 					{/* , {weatherData.sys.country} */}
 				</Text>
 				{/* <TouchableOpacity className="absolute right-4 top-3 p-2 rounded-full" onPress={handleSearch}>
@@ -216,17 +217,17 @@ export default function App() {
 				<Text className="h-52 mb-6 bottom-6">{getIcon(weatherData.weather[0].icon, 140)}</Text>
 				<View className="items-center mb-40 bottom-2">
 					<View className="flex-row">
-						<Text className="text-8xl text-white" style={shadow}>{Math.round(weatherData.main.temp)}</Text>
-						<Text className="font-bold text-lg text-white" style={shadow}>°C</Text>
+						<Text className="text-8xl text-white" style={styles.shadow}>{Math.round(weatherData.main.temp)}</Text>
+						<Text className="font-bold text-lg text-white" style={styles.shadow}>°C</Text>
 					</View>
-					<Text className="text-lg first-letter:capitalize bottom-4 text-white" style={shadow}>{weatherData.weather[0].description}</Text>
+					<Text className="text-lg first-letter:capitalize bottom-4 text-white" style={styles.shadow}>{weatherData.weather[0].description}</Text>
 				</View>
-				<ScrollView className="absolute flex-row bottom-20 rounded-3xl mx-3" snapToInterval={90} horizontal showsHorizontalScrollIndicator={false} decelerationRate={0} snapToAlignment="start" style={{
+				<ScrollView className="absolute flex-row bottom-20 rounded-2xl mx-3" snapToInterval={89} horizontal showsHorizontalScrollIndicator={false} snapToAlignment="start" style={{
 					backgroundColor: 'rgba(0,0,0,0.4)',
 				}}>
 					{
 						hourlyData.list.map((hour, index) => {
-							return <Forecast key={index} temp={Math.round(hour.main.temp)} icon={getIcon(hour.weather[0].icon, 40)} hour={hour.dt_txt} />
+							return <Forecast key={index} temp={Math.round(hour.main.temp)} icon={getIcon(hour.weather[0].icon, 40)} hour={hour.dt_txt} timezone={hourlyData.city.timezone} />
 						})
 					}
 				</ScrollView>
@@ -252,5 +253,3 @@ const styles = StyleSheet.create({
 		textShadowRadius: 10
 	}
 });
-
-const shadow = StyleSheet.compose(styles.shadow);

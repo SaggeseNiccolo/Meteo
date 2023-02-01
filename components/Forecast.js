@@ -1,21 +1,30 @@
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 
-export default function Forecast({ temp, icon, hour }) {
+export default function Forecast({ temp, icon, hour, timezone }) {
+
+    hour = hour.slice(11, 13);
+    hour = parseInt(hour) + timezone / 3600;
+    hour = hour % 24;
+    
+    if (hour < 10) {
+        hour = "0" + hour;
+    }
+
     return (
         <View>
-            <TouchableOpacity activeOpacity={0.4} style={container}>
-                <Text style={[{ fontSize: 17, fontWeight: "300", color:"white" }, shadow]}> {hour.slice(10, 16)} </Text>
-                <Text style={[{ fontSize: 19, color: "white", left: 3 }, shadow]}> {temp}° </Text>
+            <TouchableOpacity activeOpacity={0.4} style={styles.container}>
+                <Text style={[{ fontSize: 17, fontWeight: "300", color:"white" }, styles.shadow]}> {hour}:00 </Text>
+                <Text style={[{ fontSize: 19, color: "white", left: 3 }, styles.shadow]}> {temp}° </Text>
                 <Text style={{ height: 60, marginTop: -10 }}> {icon} </Text>
             </TouchableOpacity>
         </View>
     );
 };
 
-const page = StyleSheet.create({
+const styles = StyleSheet.create({
     container: {
         padding: 14,
-        marginRight: 10,
+        marginHorizontal: 6,
         alignItems: "center",
     },
     shadow: {
@@ -24,6 +33,3 @@ const page = StyleSheet.create({
         textShadowRadius: 10
     },
 });
-
-const container = StyleSheet.compose(page.container);
-const shadow = StyleSheet.compose(page.shadow);
