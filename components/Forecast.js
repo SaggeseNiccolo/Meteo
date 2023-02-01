@@ -5,7 +5,7 @@ export default function Forecast({ temp, icon, hour }) {
         <View>
             <TouchableOpacity activeOpacity={0.4} style={container}>
                 <Text style={[{ fontSize: 17, fontWeight: "300", color:"white" }, shadow]}> {hour.slice(10, 16)} </Text>
-                <Text style={[{ fontSize: 20, color: "white", left: 3 }, shadow]}> {temp}° </Text>
+                <Text style={[{ fontSize: 19, color: "white", left: 3 }, shadow]}> {temp}° </Text>
                 <Text style={{ height: 60, marginTop: -10 }}> {icon} </Text>
             </TouchableOpacity>
         </View>
