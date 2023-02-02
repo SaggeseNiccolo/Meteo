@@ -5,7 +5,11 @@ export default function Forecast({ temp, icon, hour, timezone }) {
     hour = hour.slice(11, 13);
     hour = parseInt(hour) + timezone / 3600;
     hour = hour % 24;
-    
+
+    if (hour < 0) {
+        hour = hour + 24;
+    }
+
     if (hour < 10) {
         hour = "0" + hour;
     }
@@ -13,7 +17,7 @@ export default function Forecast({ temp, icon, hour, timezone }) {
     return (
         <View>
             <TouchableOpacity activeOpacity={0.4} style={styles.container}>
-                <Text style={[{ fontSize: 17, fontWeight: "300", color:"white" }, styles.shadow]}> {hour}:00 </Text>
+                <Text style={[{ fontSize: 17, fontWeight: "300", color: "white" }, styles.shadow]}> {hour}:00 </Text>
                 <Text style={[{ fontSize: 19, color: "white", left: 3 }, styles.shadow]}> {temp}° </Text>
                 <Text style={{ height: 60, marginTop: -10 }}> {icon} </Text>
             </TouchableOpacity>

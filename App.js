@@ -179,7 +179,19 @@ export default function App() {
 	};
 
 	const handleSearch = () => {
-		if (city === '') { }
+
+		const prohibitedCharacters = ["@", "#", "$", "%", "^", "&", "*", "(", ")", "-", "_", "+", "=", "{", "}", "[", "]", "|", ":", ";", "'", '"', "<", ">", "?", "/"];
+
+		for (let i in prohibitedCharacters) {
+			if (city.includes(prohibitedCharacters[i])) {
+				alert("Inserisci una città valida");
+				return;
+			}
+		}
+
+		if (city === '') { 
+			return;
+		}
 		else {
 			setCity(city);
 			setName(city);
@@ -260,7 +272,7 @@ export default function App() {
 							return (
 								<Daily
 									key={index}
-									chi={index}
+									k={index}
 									temp={Math.round(day.temp.day)}
 									icon={getIcon(day.weather[0].icon, 40)}
 									day={day.dt}

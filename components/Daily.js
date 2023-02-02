@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 
-export default function Forecast({ chi, temp, icon, day }) {
+export default function Forecast({ k, temp, icon, day }) {
 
     day = new Date(day * 1000).getDay();
 
@@ -28,7 +28,7 @@ export default function Forecast({ chi, temp, icon, day }) {
             break;
     }
 
-    if (chi == 0) {
+    if (k == 0) {
         day = "Oggi";
     }
 
@@ -36,7 +36,7 @@ export default function Forecast({ chi, temp, icon, day }) {
         <View>
             <TouchableOpacity activeOpacity={0.4} style={styles.container}>
                 <Text style={[{ fontSize: 17, fontWeight: "300", color: "white" }, styles.shadow]}> {day} </Text>
-                {/* <Text style={[{ fontSize: 19, color: "white", left: 3 }, styles.shadow]}> {temp}° </Text> */}
+                <Text style={[{ fontSize: 19, color: "white", left: 3 }, styles.shadow]}> {temp}° </Text>
                 <Text style={{ height: 60, marginTop: -10 }}> {icon} </Text>
             </TouchableOpacity>
         </View>
