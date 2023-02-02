@@ -1,15 +1,17 @@
 import { useState, useEffect, useRef } from 'react';
-import { Text, StatusBar, View, SafeAreaView, TextInput, TouchableOpacity, Keyboard, ScrollView, Image, ImageBackground, useWindowDimensions, StyleSheet } from 'react-native';
+import { Text, StatusBar, View, SafeAreaView, TextInput, TouchableOpacity, Keyboard, ScrollView, Image, ImageBackground, useWindowDimensions, StyleSheet, KeyboardAvoidingView } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import Forecast from './components/Forecast';
+import Hourly from './components/Hourly';
+import Daily from './components/Daily';
 import * as Location from 'expo-location';
 
 export default function App() {
+	const cityRef = useRef(null);
 	const [weatherData, setWeatherData] = useState(null);
 	const [hourlyData, setHourlyData] = useState(null);
+	const [dailyData, setDailyData] = useState(null);
 	const [city, setCity] = useState(null);
 	const [name, setName] = useState(null);
-	const inputRef = useRef();
 
 	const API_KEY = 'c77ad253e30870ec7de6ea19d30ffc5c';
 
@@ -38,8 +40,6 @@ export default function App() {
 					fetchWeatherData(location.coords.latitude, location.coords.longitude);
 				});
 		})();
-		// setCityName(scandicci.lat, scandicci.lon);
-		// fetchWeatherData(scandicci.lat, scandicci.lon);
 	}, []);
 
 	const setCityName = async (lat, lon) => {
@@ -57,17 +57,19 @@ export default function App() {
 	};
 
 	const handleLocation = async (city) => {
-		const response = await fetch(`http://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=1&appid=${API_KEY}`);
+		try {
+			const response = await fetch(`http://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=1&appid=${API_KEY}`);
 
-		await response.json().then((coords) => {
-			if (coords[0]) {
-				fetchWeatherData(coords[0].lat, coords[0].lon);
-			} else {
-				alert("Città non trovata");
-			}
-		}).catch((error) => {
+			await response.json().then((coords) => {
+				if (coords[0]) {
+					fetchWeatherData(coords[0].lat, coords[0].lon);
+				} else {
+					alert("Città non trovata");
+				}
+			});
+		} catch (error) {
 			console.error(error);
-		});
+		}
 	};
 
 	const fetchWeatherData = async (lat, lon) => {
@@ -76,8 +78,7 @@ export default function App() {
 			await response.json().then((data) => {
 				setWeatherData(data);
 			});
-		}
-		catch (error) {
+		} catch (error) {
 			console.error(error);
 		}
 		try {
@@ -85,8 +86,15 @@ export default function App() {
 			await response.json().then((data) => {
 				setHourlyData(data);
 			});
+		} catch (error) {
+			console.error(error);
 		}
-		catch (error) {
+		try {
+			const response = await fetch(`https://pro.openweathermap.org/data/2.5/forecast/daily?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric&cnt=7&lang=it`);
+			await response.json().then((data) => {
+				setDailyData(data);
+			});
+		} catch (error) {
 			console.error(error);
 		}
 	};
@@ -171,19 +179,18 @@ export default function App() {
 	};
 
 	const handleSearch = () => {
-		console.log("handleSearch");
-		if (inputRef.current.value === '') { }
+		if (city === '') { }
 		else {
 			setCity(city);
 			setName(city);
 			handleLocation(city);
 
-			inputRef.current.clear();
+			cityRef.current.clear();
 			Keyboard.dismiss();
 		}
 	};
 
-	if (weatherData === null || hourlyData === null) {
+	if (weatherData === null || hourlyData === null || dailyData === null) {
 		return (
 			<SafeAreaView className="flex-1 items-center justify-center" />
 		);
@@ -197,7 +204,6 @@ export default function App() {
 		}}>
 			<StatusBar translucent backgroundColor={"transparent"} />
 			<ScrollView
-				// className="flex-1 items-center justify-center"
 				contentContainerStyle={{
 					flex: 1,
 					alignItems: 'center',
@@ -208,39 +214,82 @@ export default function App() {
 				style={{
 					backgroundColor: 'rgba(0,0,0,0.3)',
 				}}>
-				<Text className="absolute top-10 font-medium text-4xl text-white" style={styles.shadow}>{name}
-					{/* , {weatherData.sys.country} */}
-				</Text>
-				{/* <TouchableOpacity className="absolute right-4 top-3 p-2 rounded-full" onPress={handleSearch}>
-						<Icon name="navigate" size={26} />
-					</TouchableOpacity> */}
+
+				{/* City name */}
+
+				<Text className="absolute top-10 font-medium text-4xl text-white" style={styles.shadow}>{name}</Text>
+
+				{/* Body */}
+
 				<Text className="h-52 mb-6 bottom-6">{getIcon(weatherData.weather[0].icon, 140)}</Text>
 				<View className="items-center mb-40 bottom-2">
-					<View className="flex-row">
+					<View className="flex-row left-1">
 						<Text className="text-8xl text-white" style={styles.shadow}>{Math.round(weatherData.main.temp)}</Text>
 						<Text className="font-bold text-lg text-white" style={styles.shadow}>°C</Text>
 					</View>
 					<Text className="text-lg first-letter:capitalize bottom-4 text-white" style={styles.shadow}>{weatherData.weather[0].description}</Text>
 				</View>
-				<ScrollView className="absolute flex-row bottom-20 rounded-2xl mx-3" snapToInterval={89} horizontal showsHorizontalScrollIndicator={false} snapToAlignment="start" style={{
+
+				{/* Hourly */}
+
+				<ScrollView className="absolute flex-row bottom-20 rounded-2xl mx-3" snapToInterval={89} horizontal showsHorizontalScrollIndicator={false} decelerationRate={0} snapToAlignment="start" style={{
 					backgroundColor: 'rgba(0,0,0,0.4)',
 				}}>
 					{
 						hourlyData.list.map((hour, index) => {
-							return <Forecast key={index} temp={Math.round(hour.main.temp)} icon={getIcon(hour.weather[0].icon, 40)} hour={hour.dt_txt} timezone={hourlyData.city.timezone} />
+							return (
+								<Hourly
+									key={index}
+									temp={Math.round(hour.main.temp)}
+									icon={getIcon(hour.weather[0].icon, 40)}
+									hour={hour.dt_txt}
+									timezone={hourlyData.city.timezone}
+								/>
+							)
 						})
 					}
 				</ScrollView>
+
+				{/* Daily */}
+
+				<ScrollView className="absolute flex-row bottom-56 rounded-2xl mx-3" snapToInterval={70} horizontal showsHorizontalScrollIndicator={false} decelerationRate={0} snapToAlignment="start" style={{
+					backgroundColor: 'rgba(0,0,0,0.4)',
+				}}>
+					{
+						dailyData.list.map((day, index) => {
+							return (
+								<Daily
+									key={index}
+									chi={index}
+									temp={Math.round(day.temp.day)}
+									icon={getIcon(day.weather[0].icon, 40)}
+									day={day.dt}
+								/>
+							)
+						})
+					}
+				</ScrollView>
+
+				{/* Input */}
+
 				<View className="absolute flex-row bottom-4 w-11/12 rounded-full" style={{
 					backgroundColor: 'rgba(0,0,0,0.4)',
 				}}>
-					<TextInput className="flex-1 my-2 px-5 text-lg text-white" placeholder="Cerca città" placeholderTextColor="white"
+					<TextInput
+						className="flex-1 my-2 px-5 text-lg text-white"
+						placeholder="Cerca città" placeholderTextColor="white"
 						onChangeText={(newCity) => setCity(newCity)}
-						onSubmitEditing={handleSearch} ref={inputRef} />
-					<TouchableOpacity className="w-6 justify-center mr-3" onPress={handleSearch}>
+						ref={cityRef}
+						onSubmitEditing={handleSearch}
+					/>
+					<TouchableOpacity
+						className="w-6 justify-center mr-3"
+						onPress={handleSearch}
+					>
 						<Icon name="search" size={24} color="white" />
 					</TouchableOpacity>
 				</View>
+
 			</ScrollView >
 		</ImageBackground >
 	);
