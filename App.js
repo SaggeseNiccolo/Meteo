@@ -197,86 +197,121 @@ export default function App() {
 	}
 
 	return (
-		<TouchableWithoutFeedback >
-			<ImageBackground source={getBackgroundImage(weatherData.weather[0].icon)} blurRadius={0} style={{
+		<ImageBackground
+			source={getBackgroundImage(weatherData.weather[0].icon)}
+			blurRadius={0}
+			style={{
 				flex: 1,
 				width: screenWidth,
 				height: screenHeight,
+			}}
+		>
+			<View className="items-center" style={{
+				backgroundColor: 'rgba(0,0,0,0.3)',
 			}}>
 				<StatusBar translucent backgroundColor={"transparent"} />
+
+				{/* City name */}
+
+				<Text className="top-10 font-medium text-4xl text-white" style={styles.shadow}>
+					{name}
+				</Text>
+
 				<ScrollView
 					contentContainerStyle={{
-						flex: 1,
+						// flex: 1,
 						alignItems: 'center',
-						justifyContent: 'center',
+						// justifyContent: 'space-between',
 					}}
 					showsVerticalScrollIndicator={false}
-					keyboardShouldPersistTaps="always"
+					keyboardShouldPersistTaps="handled"
 					// keyboardDismissMode="on-drag"
 					onPress={Keyboard.dismiss}
 					style={{
-						backgroundColor: 'rgba(0,0,0,0.3)',
-					}}>
-
-					{/* City name */}
-
-					<Text className="absolute top-10 font-medium text-4xl text-white" style={styles.shadow}>{name}</Text>
-
+						// backgroundColor: 'rgba(0,0,0,0.3)',
+						marginTop: 45,
+					}}
+				>
 					{/* Body */}
 
-					<Text className="h-52 mb-6 bottom-6">{getIcon(weatherData.weather[0].icon, 140)}</Text>
-					<View className="items-center mb-40 bottom-8">
+					<View className="items-center mt-48">
+						{/* {getIcon(weatherData.weather[0].icon, 140)} */}
 						<View className="flex-row left-1">
-							<Text className="text-8xl text-white" style={styles.shadow}>{Math.round(weatherData.main.temp)}</Text>
-							<Text className="font-bold text-lg text-white" style={styles.shadow}>°C</Text>
+							<Text className="text-9xl text-white" style={styles.shadow}>
+								{Math.round(weatherData.main.temp)}
+							</Text>
+							<Text className="font-bold text-lg text-white" style={styles.shadow}>
+								°C
+							</Text>
 						</View>
-						<Text className="text-lg first-letter:capitalize bottom-4 text-white" style={styles.shadow}>{weatherData.weather[0].description}</Text>
+						<Text className="text-xl first-letter:capitalize text-white bottom-3" style={styles.shadow}>
+							{weatherData.weather[0].description}
+						</Text>
 					</View>
 
-					{/* Hourly */}
+					<View className="space-y-4 mt-32">
 
-					<ScrollView className="absolute flex-row bottom-20 rounded-2xl mx-3" snapToInterval={89} horizontal showsHorizontalScrollIndicator={false} decelerationRate={0} snapToAlignment="start" style={{
-						backgroundColor: 'rgba(0,0,0,0.4)',
-					}}>
-						<Hourly temp={Math.round(weatherData.main.temp)} icon={getIcon(weatherData.weather[0].icon, 40)} hour="Ora" />
-						{
-							hourlyData.list.map((hour, index) => {
-								return (
-									<Hourly
-										key={index}
-										temp={Math.round(hour.main.temp)}
-										icon={getIcon(hour.weather[0].icon, 40)}
-										hour={hour.dt_txt}
-										timezone={hourlyData.city.timezone}
-									/>
-								)
-							})
-						}
-					</ScrollView>
+						{/* Daily */}
 
-					{/* Daily */}
+						<ScrollView
+							className="flex-none flex-row rounded-2xl mx-3"
+							snapToInterval={70}
+							horizontal
+							showsHorizontalScrollIndicator={false}
+							decelerationRate={0}
+							snapToAlignment="start"
+							style={{
+								backgroundColor: 'rgba(0,0,0,0.4)',
+							}}
+						>
+							{
+								dailyData.list.map((day, index) => {
+									return (
+										<Daily
+											key={index}
+											k={index}
+											temp={Math.round(day.temp.day)}
+											icon={getIcon(day.weather[0].icon, 40)}
+											day={day.dt}
+										/>
+									)
+								})
+							}
+						</ScrollView>
 
-					<ScrollView className="absolute flex-row bottom-56 rounded-2xl mx-3" snapToInterval={70} horizontal showsHorizontalScrollIndicator={false} decelerationRate={0} snapToAlignment="start" style={{
-						backgroundColor: 'rgba(0,0,0,0.4)',
-					}}>
-						{
-							dailyData.list.map((day, index) => {
-								return (
-									<Daily
-										key={index}
-										k={index}
-										temp={Math.round(day.temp.day)}
-										icon={getIcon(day.weather[0].icon, 40)}
-										day={day.dt}
-									/>
-								)
-							})
-						}
-					</ScrollView>
+						{/* Hourly */}
+
+						<ScrollView
+							className="flex-none flex-row rounded-2xl mx-3 mb-8"
+							snapToInterval={93}
+							horizontal
+							showsHorizontalScrollIndicator={false}
+							decelerationRate={0}
+							snapToAlignment="start"
+							style={{
+								backgroundColor: 'rgba(0,0,0,0.4)',
+							}}
+						>
+							<Hourly temp={Math.round(weatherData.main.temp)} icon={getIcon(weatherData.weather[0].icon, 40)} hour="Ora" />
+							{
+								hourlyData.list.map((hour, index) => {
+									return (
+										<Hourly
+											key={index}
+											temp={Math.round(hour.main.temp)}
+											icon={getIcon(hour.weather[0].icon, 40)}
+											hour={hour.dt_txt}
+											timezone={hourlyData.city.timezone}
+										/>
+									)
+								})
+							}
+						</ScrollView>
+					</View>
 
 					{/* Input */}
 
-					<View className="absolute flex-row bottom-4 w-11/12 rounded-full" style={{
+					<View className="flex-row w-11/12 rounded-full mb-14 -mt-5" style={{
 						backgroundColor: 'rgba(0,0,0,0.4)',
 					}}>
 						<TextInput
@@ -296,8 +331,8 @@ export default function App() {
 					</View>
 
 				</ScrollView >
-			</ImageBackground >
-		</TouchableWithoutFeedback >
+			</View>
+		</ImageBackground >
 	);
 }
 

@@ -23,7 +23,7 @@ export default function Forecast({ temp, icon, hour, timezone }) {
             <TouchableOpacity activeOpacity={0.4} style={styles.container}>
                 <Text style={[{ fontSize: 17, fontWeight: "300", color: "white" }, styles.shadow]}> {hour} </Text>
                 <Text style={[{ fontSize: 19, color: "white", left: 3 }, styles.shadow]}> {temp}° </Text>
-                <Text style={{ height: 60, marginTop: -10 }}> {icon} </Text>
+                {icon}
             </TouchableOpacity>
         </View>
     );
@@ -32,7 +32,7 @@ export default function Forecast({ temp, icon, hour, timezone }) {
 const styles = StyleSheet.create({
     container: {
         padding: 14,
-        marginHorizontal: 6,
+        marginHorizontal: 8,
         alignItems: "center",
     },
     shadow: {
