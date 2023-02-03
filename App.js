@@ -18,6 +18,9 @@ export default function App() {
 	const screenHeight = useWindowDimensions().height + 50;
 	const screenWidth = useWindowDimensions().width;
 
+	if (Text.defaultProps == null) Text.defaultProps = {};
+	Text.defaultProps.allowFontScaling = false;
+
 	useEffect(() => {
 		(async () => {
 			let { status } = await Location.requestForegroundPermissionsAsync();
@@ -230,8 +233,8 @@ export default function App() {
 					style={{
 						// backgroundColor: 'rgba(0,0,0,0.3)',
 						marginTop: 85,
-						borderTopWidth: 1,
-						borderTopColor: 'rgba(255,255,255,0.2)',
+						// borderTopWidth: 1,
+						// borderTopColor: 'rgba(255,255,255,0.2)',
 					}}
 				>
 					{/* Body */}
