@@ -213,7 +213,7 @@ export default function App() {
 
 				{/* City name */}
 
-				<Text className="top-10 font-medium text-4xl text-white" style={styles.shadow}>
+				<Text className="absolute top-10 font-medium text-4xl text-white" style={styles.shadow}>
 					{name}
 				</Text>
 
@@ -229,7 +229,9 @@ export default function App() {
 					onPress={Keyboard.dismiss}
 					style={{
 						// backgroundColor: 'rgba(0,0,0,0.3)',
-						marginTop: 45,
+						marginTop: 85,
+						borderTopWidth: 1,
+						borderTopColor: 'rgba(255,255,255,0.2)',
 					}}
 				>
 					{/* Body */}
@@ -282,7 +284,7 @@ export default function App() {
 						{/* Hourly */}
 
 						<ScrollView
-							className="flex-none flex-row rounded-2xl mx-3 mb-8"
+							className="flex-none flex-row rounded-2xl mx-3"
 							snapToInterval={93}
 							horizontal
 							showsHorizontalScrollIndicator={false}
@@ -311,7 +313,7 @@ export default function App() {
 
 					{/* Input */}
 
-					<View className="flex-row w-11/12 rounded-full mb-14 -mt-5" style={{
+					<View className="flex-row w-11/12 rounded-full mt-4 mb-3" style={{
 						backgroundColor: 'rgba(0,0,0,0.4)',
 					}}>
 						<TextInput
