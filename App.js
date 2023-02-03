@@ -6,12 +6,14 @@ import Daily from './components/Daily';
 import * as Location from 'expo-location';
 
 export default function App() {
-	const cityRef = useRef(null);
 	const [weatherData, setWeatherData] = useState(null);
 	const [hourlyData, setHourlyData] = useState(null);
 	const [dailyData, setDailyData] = useState(null);
 	const [city, setCity] = useState(null);
 	const [name, setName] = useState(null);
+	const [inputVisible, setInputVisible] = useState(false);
+
+	const cityRef = useRef(null);
 
 	const API_KEY = 'c77ad253e30870ec7de6ea19d30ffc5c';
 
@@ -33,6 +35,12 @@ export default function App() {
 				});
 		})();
 	}, []);
+
+	useEffect(() => {
+		if (inputVisible) {
+			cityRef.current.focus();
+		}
+	}, [inputVisible]);
 
 	const setCityName = async (lat, lon) => {
 		const response = await fetch(`http://api.openweathermap.org/geo/1.0/reverse?lat=${lat}&lon=${lon}&limit=1&appid=${API_KEY}`);
@@ -173,10 +181,12 @@ export default function App() {
 	};
 
 	const handleSearch = () => {
+		setInputVisible(false);
+
 		if (city === '' || city === null) {
 			return;
 		} else {
-			if (!/^[a-zA-Z\s]*$/.test(city)) {
+			if (!/^[a-zA-Z\sà]*$/.test(city)) {
 				setCity("");
 				cityRef.current.clear();
 				Keyboard.dismiss();
@@ -209,16 +219,53 @@ export default function App() {
 				height: screenHeight,
 			}}
 		>
-			<View className="items-center" style={{
+			<View className="flex-1 items-center" style={{
 				backgroundColor: 'rgba(0,0,0,0.3)',
 			}}>
 				<StatusBar translucent backgroundColor={"transparent"} />
 
 				{/* City name */}
 
-				<Text className="absolute top-10 font-medium text-4xl text-white" style={styles.shadow}>
-					{name}
-				</Text>
+				{
+					inputVisible ?
+						<View
+							className="absolute flex-row w-11/12 rounded-full top-10"
+							style={{
+								backgroundColor: 'rgba(0,0,0,0.4)',
+							}}
+						>
+							<TextInput
+								className="flex-1 my-2 px-5 text-lg text-white"
+								placeholder="Cerca città"
+								placeholderTextColor="white"
+								onChangeText={(newCity) => setCity(newCity)}
+								ref={cityRef}
+								onSubmitEditing={handleSearch}
+								autoFocus={true}
+							/>
+							<TouchableOpacity
+								className="w-6 justify-center mr-3"
+								onPress={handleSearch}
+							>
+								<Icon name="search" size={24} color="white" />
+							</TouchableOpacity>
+						</View>
+						:
+						<View className="absolute flex-row top-10 items-center w-11/12">
+							<Text className="flex-1 my-2 text-center left-3 font-medium text-4xl text-white" style={styles.shadow}>
+								{name}
+							</Text>
+							<TouchableOpacity
+								className="w-6"
+								// onPress={handleSearch}
+								onPress={() => {
+									setInputVisible(true);
+								}}
+							>
+								<Icon name="search" size={24} color="white" style={styles.shadow} />
+							</TouchableOpacity>
+						</View>
+				}
 
 				<ScrollView
 					contentContainerStyle={{
@@ -228,13 +275,11 @@ export default function App() {
 					}}
 					showsVerticalScrollIndicator={false}
 					keyboardShouldPersistTaps="handled"
-					// keyboardDismissMode="on-drag"
+					keyboardDismissMode="on-drag"
 					onPress={Keyboard.dismiss}
 					style={{
-						// backgroundColor: 'rgba(0,0,0,0.3)',
 						marginTop: 85,
-						// borderTopWidth: 1,
-						// borderTopColor: 'rgba(255,255,255,0.2)',
+						zIndex: -1,
 					}}
 				>
 					{/* Body */}
@@ -254,7 +299,7 @@ export default function App() {
 						</Text>
 					</View>
 
-					<View className="space-y-4 mt-32">
+					<View className="space-y-4 mt-44">
 
 						{/* Daily */}
 
@@ -312,27 +357,6 @@ export default function App() {
 								})
 							}
 						</ScrollView>
-					</View>
-
-					{/* Input */}
-
-					<View className="flex-row w-11/12 rounded-full mt-4 mb-3" style={{
-						backgroundColor: 'rgba(0,0,0,0.4)',
-					}}>
-						<TextInput
-							className="flex-1 my-2 px-5 text-lg text-white"
-							placeholder="Cerca città"
-							placeholderTextColor="white"
-							onChangeText={(newCity) => setCity(newCity)}
-							ref={cityRef}
-							onSubmitEditing={handleSearch}
-						/>
-						<TouchableOpacity
-							className="w-6 justify-center mr-3"
-							onPress={handleSearch}
-						>
-							<Icon name="search" size={24} color="white" />
-						</TouchableOpacity>
 					</View>
 
 				</ScrollView >
