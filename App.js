@@ -18,16 +18,6 @@ export default function App() {
 	const screenHeight = useWindowDimensions().height + 50;
 	const screenWidth = useWindowDimensions().width;
 
-	const scandicci = {
-		"lat": 43.75423,
-		"lon": 11.18794
-	}
-
-	const firenze = {
-		"lat": 43.77925,
-		"lon": 11.24626
-	}
-
 	useEffect(() => {
 		(async () => {
 			let { status } = await Location.requestForegroundPermissionsAsync();
@@ -82,7 +72,7 @@ export default function App() {
 			console.error(error);
 		}
 		try {
-			const response = await fetch(`https://pro.openweathermap.org/data/2.5/forecast/hourly?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric&cnt=24&lang=it`);
+			const response = await fetch(`https://pro.openweathermap.org/data/2.5/forecast/hourly?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric&cnt=23&lang=it`);
 			await response.json().then((data) => {
 				setHourlyData(data);
 			});
@@ -180,10 +170,11 @@ export default function App() {
 
 	const handleSearch = () => {
 
-		const prohibitedCharacters = ["@", "#", "$", "%", "^", "&", "*", "(", ")", "-", "_", "+", "=", "{", "}", "[", "]", "|", ":", ";", "'", '"', "<", ">", "?", "/"];
+		const prohibitedCharacters = ["@", "#", "$", "%", "^", "&", "*", "(", ")", "-", "_", "+", "=", "{", "}", "[", "]", "|", ":", ";", "'", '"', "<", ">", "?", "/", "\\", "`", "~", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0"];
 
 		for (let i in prohibitedCharacters) {
 			if (city.includes(prohibitedCharacters[i])) {
+				cityRef.current.clear();
 				alert("Inserisci una città valida");
 				return;
 			}
@@ -234,7 +225,7 @@ export default function App() {
 				{/* Body */}
 
 				<Text className="h-52 mb-6 bottom-6">{getIcon(weatherData.weather[0].icon, 140)}</Text>
-				<View className="items-center mb-40 bottom-2">
+				<View className="items-center mb-40 bottom-8">
 					<View className="flex-row left-1">
 						<Text className="text-8xl text-white" style={styles.shadow}>{Math.round(weatherData.main.temp)}</Text>
 						<Text className="font-bold text-lg text-white" style={styles.shadow}>°C</Text>
@@ -247,6 +238,7 @@ export default function App() {
 				<ScrollView className="absolute flex-row bottom-20 rounded-2xl mx-3" snapToInterval={89} horizontal showsHorizontalScrollIndicator={false} decelerationRate={0} snapToAlignment="start" style={{
 					backgroundColor: 'rgba(0,0,0,0.4)',
 				}}>
+					<Hourly temp={Math.round(weatherData.main.temp)} icon={getIcon(weatherData.weather[0].icon, 40)} hour="Ora" />
 					{
 						hourlyData.list.map((hour, index) => {
 							return (
