@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Text, StatusBar, View, SafeAreaView, TextInput, TouchableOpacity, Keyboard, ScrollView, Image, ImageBackground, useWindowDimensions, StyleSheet, KeyboardAvoidingView } from 'react-native';
+import { Text, StatusBar, View, SafeAreaView, TextInput, TouchableOpacity, Keyboard, ScrollView, Image, ImageBackground, useWindowDimensions, StyleSheet, KeyboardAvoidingView, TouchableWithoutFeedback } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Hourly from './components/Hourly';
 import Daily from './components/Daily';
@@ -25,7 +25,6 @@ export default function App() {
 
 			await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced })
 				.then((location) => {
-					console.log(location.coords.latitude, location.coords.longitude);
 					setCityName(location.coords.latitude, location.coords.longitude);
 					fetchWeatherData(location.coords.latitude, location.coords.longitude);
 				});
@@ -53,8 +52,10 @@ export default function App() {
 			await response.json().then((coords) => {
 				if (coords[0]) {
 					fetchWeatherData(coords[0].lat, coords[0].lon);
+					setName(city);
 				} else {
 					alert("Città non trovata");
+					setCity("");
 				}
 			});
 		} catch (error) {
@@ -169,24 +170,20 @@ export default function App() {
 	};
 
 	const handleSearch = () => {
-
-		const prohibitedCharacters = ["@", "#", "$", "%", "^", "&", "*", "(", ")", "-", "_", "+", "=", "{", "}", "[", "]", "|", ":", ";", "'", '"', "<", ">", "?", "/", "\\", "`", "~", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0"];
-
-		for (let i in prohibitedCharacters) {
-			if (city.includes(prohibitedCharacters[i])) {
+		if (city === '' || city === null) {
+			alert("Inserisci una città");
+			return;
+		} else {
+			if (!/^[a-zA-Z\s]*$/.test(city)) {
 				cityRef.current.clear();
+				Keyboard.dismiss();
 				alert("Inserisci una città valida");
 				return;
 			}
-		}
 
-		if (city === '') { 
-			return;
-		}
-		else {
-			setCity(city);
-			setName(city);
-			handleLocation(city);
+			handleLocation(city).then(() => {
+				setCity("");
+			});
 
 			cityRef.current.clear();
 			Keyboard.dismiss();
@@ -200,102 +197,107 @@ export default function App() {
 	}
 
 	return (
-		<ImageBackground source={getBackgroundImage(weatherData.weather[0].icon)} blurRadius={0} style={{
-			flex: 1,
-			width: screenWidth,
-			height: screenHeight,
-		}}>
-			<StatusBar translucent backgroundColor={"transparent"} />
-			<ScrollView
-				contentContainerStyle={{
-					flex: 1,
-					alignItems: 'center',
-					justifyContent: 'center',
-				}}
-				showsVerticalScrollIndicator={false}
-				keyboardShouldPersistTaps="always"
-				style={{
-					backgroundColor: 'rgba(0,0,0,0.3)',
-				}}>
+		<TouchableWithoutFeedback >
+			<ImageBackground source={getBackgroundImage(weatherData.weather[0].icon)} blurRadius={0} style={{
+				flex: 1,
+				width: screenWidth,
+				height: screenHeight,
+			}}>
+				<StatusBar translucent backgroundColor={"transparent"} />
+				<ScrollView
+					contentContainerStyle={{
+						flex: 1,
+						alignItems: 'center',
+						justifyContent: 'center',
+					}}
+					showsVerticalScrollIndicator={false}
+					keyboardShouldPersistTaps="always"
+					// keyboardDismissMode="on-drag"
+					onPress={Keyboard.dismiss}
+					style={{
+						backgroundColor: 'rgba(0,0,0,0.3)',
+					}}>
 
-				{/* City name */}
+					{/* City name */}
 
-				<Text className="absolute top-10 font-medium text-4xl text-white" style={styles.shadow}>{name}</Text>
+					<Text className="absolute top-10 font-medium text-4xl text-white" style={styles.shadow}>{name}</Text>
 
-				{/* Body */}
+					{/* Body */}
 
-				<Text className="h-52 mb-6 bottom-6">{getIcon(weatherData.weather[0].icon, 140)}</Text>
-				<View className="items-center mb-40 bottom-8">
-					<View className="flex-row left-1">
-						<Text className="text-8xl text-white" style={styles.shadow}>{Math.round(weatherData.main.temp)}</Text>
-						<Text className="font-bold text-lg text-white" style={styles.shadow}>°C</Text>
+					<Text className="h-52 mb-6 bottom-6">{getIcon(weatherData.weather[0].icon, 140)}</Text>
+					<View className="items-center mb-40 bottom-8">
+						<View className="flex-row left-1">
+							<Text className="text-8xl text-white" style={styles.shadow}>{Math.round(weatherData.main.temp)}</Text>
+							<Text className="font-bold text-lg text-white" style={styles.shadow}>°C</Text>
+						</View>
+						<Text className="text-lg first-letter:capitalize bottom-4 text-white" style={styles.shadow}>{weatherData.weather[0].description}</Text>
 					</View>
-					<Text className="text-lg first-letter:capitalize bottom-4 text-white" style={styles.shadow}>{weatherData.weather[0].description}</Text>
-				</View>
 
-				{/* Hourly */}
+					{/* Hourly */}
 
-				<ScrollView className="absolute flex-row bottom-20 rounded-2xl mx-3" snapToInterval={89} horizontal showsHorizontalScrollIndicator={false} decelerationRate={0} snapToAlignment="start" style={{
-					backgroundColor: 'rgba(0,0,0,0.4)',
-				}}>
-					<Hourly temp={Math.round(weatherData.main.temp)} icon={getIcon(weatherData.weather[0].icon, 40)} hour="Ora" />
-					{
-						hourlyData.list.map((hour, index) => {
-							return (
-								<Hourly
-									key={index}
-									temp={Math.round(hour.main.temp)}
-									icon={getIcon(hour.weather[0].icon, 40)}
-									hour={hour.dt_txt}
-									timezone={hourlyData.city.timezone}
-								/>
-							)
-						})
-					}
-				</ScrollView>
+					<ScrollView className="absolute flex-row bottom-20 rounded-2xl mx-3" snapToInterval={89} horizontal showsHorizontalScrollIndicator={false} decelerationRate={0} snapToAlignment="start" style={{
+						backgroundColor: 'rgba(0,0,0,0.4)',
+					}}>
+						<Hourly temp={Math.round(weatherData.main.temp)} icon={getIcon(weatherData.weather[0].icon, 40)} hour="Ora" />
+						{
+							hourlyData.list.map((hour, index) => {
+								return (
+									<Hourly
+										key={index}
+										temp={Math.round(hour.main.temp)}
+										icon={getIcon(hour.weather[0].icon, 40)}
+										hour={hour.dt_txt}
+										timezone={hourlyData.city.timezone}
+									/>
+								)
+							})
+						}
+					</ScrollView>
 
-				{/* Daily */}
+					{/* Daily */}
 
-				<ScrollView className="absolute flex-row bottom-56 rounded-2xl mx-3" snapToInterval={70} horizontal showsHorizontalScrollIndicator={false} decelerationRate={0} snapToAlignment="start" style={{
-					backgroundColor: 'rgba(0,0,0,0.4)',
-				}}>
-					{
-						dailyData.list.map((day, index) => {
-							return (
-								<Daily
-									key={index}
-									k={index}
-									temp={Math.round(day.temp.day)}
-									icon={getIcon(day.weather[0].icon, 40)}
-									day={day.dt}
-								/>
-							)
-						})
-					}
-				</ScrollView>
+					<ScrollView className="absolute flex-row bottom-56 rounded-2xl mx-3" snapToInterval={70} horizontal showsHorizontalScrollIndicator={false} decelerationRate={0} snapToAlignment="start" style={{
+						backgroundColor: 'rgba(0,0,0,0.4)',
+					}}>
+						{
+							dailyData.list.map((day, index) => {
+								return (
+									<Daily
+										key={index}
+										k={index}
+										temp={Math.round(day.temp.day)}
+										icon={getIcon(day.weather[0].icon, 40)}
+										day={day.dt}
+									/>
+								)
+							})
+						}
+					</ScrollView>
 
-				{/* Input */}
+					{/* Input */}
 
-				<View className="absolute flex-row bottom-4 w-11/12 rounded-full" style={{
-					backgroundColor: 'rgba(0,0,0,0.4)',
-				}}>
-					<TextInput
-						className="flex-1 my-2 px-5 text-lg text-white"
-						placeholder="Cerca città" placeholderTextColor="white"
-						onChangeText={(newCity) => setCity(newCity)}
-						ref={cityRef}
-						onSubmitEditing={handleSearch}
-					/>
-					<TouchableOpacity
-						className="w-6 justify-center mr-3"
-						onPress={handleSearch}
-					>
-						<Icon name="search" size={24} color="white" />
-					</TouchableOpacity>
-				</View>
+					<View className="absolute flex-row bottom-4 w-11/12 rounded-full" style={{
+						backgroundColor: 'rgba(0,0,0,0.4)',
+					}}>
+						<TextInput
+							className="flex-1 my-2 px-5 text-lg text-white"
+							placeholder="Cerca città"
+							placeholderTextColor="white"
+							onChangeText={(newCity) => setCity(newCity)}
+							ref={cityRef}
+							onSubmitEditing={handleSearch}
+						/>
+						<TouchableOpacity
+							className="w-6 justify-center mr-3"
+							onPress={handleSearch}
+						>
+							<Icon name="search" size={24} color="white" />
+						</TouchableOpacity>
+					</View>
 
-			</ScrollView >
-		</ImageBackground >
+				</ScrollView >
+			</ImageBackground >
+		</TouchableWithoutFeedback >
 	);
 }
 
