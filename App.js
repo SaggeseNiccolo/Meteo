@@ -171,10 +171,10 @@ export default function App() {
 
 	const handleSearch = () => {
 		if (city === '' || city === null) {
-			alert("Inserisci una città");
 			return;
 		} else {
 			if (!/^[a-zA-Z\s]*$/.test(city)) {
+				setCity("");
 				cityRef.current.clear();
 				Keyboard.dismiss();
 				alert("Inserisci una città valida");
