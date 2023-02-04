@@ -13,33 +13,31 @@ export default function Info({ pressure, humidity, feelsLike, min, wind, max }) 
             }}
         >
             <View className="flex-row">
-                <View className="flex-1">
+                <View className="flex-1 items-center">
                     <Text className="text-gray-400 text-sm">Minima</Text>
                     <Text className="text-white text-xl">{min}°C</Text>
                 </View>
-                <View className="flex-1">
+                <View className="flex-1 items-center">
+                    <Text className="text-gray-400 text-sm">Percepita</Text>
+                    <Text className="text-white text-xl ">{feelsLike}°C</Text>
+                </View>
+                <View className="flex-1 items-center">
                     <Text className="text-gray-400 text-sm">Massima</Text>
                     <Text className="text-white text-xl">{max}°C</Text>
                 </View>
             </View>
             <View className="flex-row">
-                <View className="flex-1">
-                    <Text className="text-gray-400 text-sm">Percepita</Text>
-                    <Text className="text-white text-xl ">{feelsLike}°C</Text>
-                </View>
-                <View className="flex-1">
-                    <Text className="text-gray-400 text-sm">Vento</Text>
-                    <Text className="text-white text-xl ">{wind} km/h</Text>
-                </View>
-            </View>
-            <View className="flex-row">
-                <View className="flex-1">
+                <View className="flex-1 items-center">
                     <Text className="text-gray-400 text-sm">Pressione</Text>
                     <Text className="text-white text-xl">{pressure} atm</Text>
                 </View>
-                <View className="flex-1">
+                <View className="flex-1 items-center">
                     <Text className="text-gray-400 text-sm">Umidità</Text>
                     <Text className="text-white text-xl">{humidity}%</Text>
+                </View>
+                <View className="flex-1 items-center">
+                    <Text className="text-gray-400 text-sm">Vento</Text>
+                    <Text className="text-white text-xl ">{wind} km/h</Text>
                 </View>
             </View>
         </View>

@@ -187,6 +187,7 @@ export default function App() {
 		setInputVisible(false);
 
 		if (city === '' || city === null) {
+			alert("Inserisci una città");
 			return;
 		} else {
 			if (!/^[a-zA-Z\sà]*$/.test(city)) {
@@ -249,6 +250,7 @@ export default function App() {
 								ref={cityRef}
 								onSubmitEditing={handleSearch}
 								autoFocus={true}
+								maxLength={19}
 							/>
 							<TouchableOpacity
 								className="w-6 justify-center mr-3"
@@ -260,7 +262,7 @@ export default function App() {
 						:
 						<View className="absolute flex-row top-10 items-center w-11/12">
 							<Text
-								className="flex-1 my-2 text-center left-3 font-medium text-4xl text-white"
+								className="flex-1 my-2 text-center left-3 font-medium text-4xl text-white first-letter:capitalize"
 								style={styles.shadow}
 							>
 								{name}
@@ -281,6 +283,7 @@ export default function App() {
 					showsVerticalScrollIndicator={false}
 					keyboardShouldPersistTaps="handled"
 					keyboardDismissMode="on-drag"
+					decelerationRate={"fast"}
 					style={{
 						zIndex: -1,
 					}}
@@ -289,7 +292,7 @@ export default function App() {
 
 					{/* Body */}
 
-					<View className="items-center mt-48">
+					<View className="items-center mt-56">
 						{/* {getIcon(weatherData.weather[0].icon, 140)} */}
 						<View className="flex-row left-1">
 							<Text className="text-9xl text-white" style={styles.shadow}>
@@ -304,7 +307,7 @@ export default function App() {
 						</Text>
 					</View>
 
-					<View className="space-y-4 mt-44">
+					<View className="space-y-4 mt-36">
 
 						{/* Daily */}
 
@@ -313,7 +316,7 @@ export default function App() {
 							snapToInterval={70}
 							horizontal
 							showsHorizontalScrollIndicator={false}
-							decelerationRate={0}
+							decelerationRate={"fast"}
 							snapToAlignment="start"
 							style={{
 								backgroundColor: 'rgba(0,0,0,0.4)',
@@ -341,7 +344,7 @@ export default function App() {
 							snapToInterval={93}
 							horizontal
 							showsHorizontalScrollIndicator={false}
-							decelerationRate={0}
+							decelerationRate={"fast"}
 							snapToAlignment="start"
 							style={{
 								backgroundColor: 'rgba(0,0,0,0.4)',
