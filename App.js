@@ -4,6 +4,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import Hourly from './components/Hourly';
 import Daily from './components/Daily';
 import * as Location from 'expo-location';
+import Info from './components/Info';
 
 export default function App() {
 	const [weatherData, setWeatherData] = useState(null);
@@ -43,17 +44,19 @@ export default function App() {
 	}, [inputVisible]);
 
 	const setCityName = async (lat, lon) => {
-		const response = await fetch(`http://api.openweathermap.org/geo/1.0/reverse?lat=${lat}&lon=${lon}&limit=1&appid=${API_KEY}`);
+		try {
+			const response = await fetch(`http://api.openweathermap.org/geo/1.0/reverse?lat=${lat}&lon=${lon}&limit=1&appid=${API_KEY}`);
 
-		await response.json().then((data) => {
-			if (data[0].local_names) {
-				setName(data[0].local_names.it);
-			} else {
-				setName(data[0].name);
-			}
-		}).catch((error) => {
+			await response.json().then((data) => {
+				if (data[0].local_names) {
+					setName(data[0].local_names.it);
+				} else {
+					setName(data[0].name);
+				}
+			});
+		} catch (error) {
 			console.error(error);
-		});
+		}
 	};
 
 	const handleLocation = async (city) => {
@@ -224,16 +227,20 @@ export default function App() {
 			}}>
 				<StatusBar translucent backgroundColor={"transparent"} />
 
-				{/* City name */}
-
 				{
 					inputVisible ?
 						<View
-							className="absolute flex-row w-11/12 rounded-full top-10"
+							className="absolute flex-row w-11/12 rounded-full top-11"
 							style={{
 								backgroundColor: 'rgba(0,0,0,0.4)',
 							}}
 						>
+							<TouchableOpacity
+								className="w-6 justify-center ml-3"
+								onPress={() => { setInputVisible(false) }}
+							>
+								<Icon name="close" size={24} color="white" />
+							</TouchableOpacity>
 							<TextInput
 								className="flex-1 my-2 px-5 text-lg text-white"
 								placeholder="Cerca città"
@@ -252,15 +259,15 @@ export default function App() {
 						</View>
 						:
 						<View className="absolute flex-row top-10 items-center w-11/12">
-							<Text className="flex-1 my-2 text-center left-3 font-medium text-4xl text-white" style={styles.shadow}>
+							<Text
+								className="flex-1 my-2 text-center left-3 font-medium text-4xl text-white"
+								style={styles.shadow}
+							>
 								{name}
 							</Text>
 							<TouchableOpacity
 								className="w-6"
-								// onPress={handleSearch}
-								onPress={() => {
-									setInputVisible(true);
-								}}
+								onPress={() => { setInputVisible(true) }}
 							>
 								<Icon name="search" size={24} color="white" style={styles.shadow} />
 							</TouchableOpacity>
@@ -269,19 +276,17 @@ export default function App() {
 
 				<ScrollView
 					contentContainerStyle={{
-						// flex: 1,
 						alignItems: 'center',
-						// justifyContent: 'space-between',
 					}}
 					showsVerticalScrollIndicator={false}
 					keyboardShouldPersistTaps="handled"
 					keyboardDismissMode="on-drag"
-					onPress={Keyboard.dismiss}
 					style={{
-						marginTop: 85,
 						zIndex: -1,
 					}}
+					className="mt-24"
 				>
+
 					{/* Body */}
 
 					<View className="items-center mt-48">
@@ -342,7 +347,11 @@ export default function App() {
 								backgroundColor: 'rgba(0,0,0,0.4)',
 							}}
 						>
-							<Hourly temp={Math.round(weatherData.main.temp)} icon={getIcon(weatherData.weather[0].icon, 40)} hour="Ora" />
+							<Hourly
+								temp={Math.round(weatherData.main.temp)}
+								icon={getIcon(weatherData.weather[0].icon, 40)}
+								hour="Ora"
+							/>
 							{
 								hourlyData.list.map((hour, index) => {
 									return (
@@ -358,6 +367,15 @@ export default function App() {
 							}
 						</ScrollView>
 					</View>
+
+					<Info
+						pressure={weatherData.main.pressure}
+						humidity={weatherData.main.humidity}
+						feelsLike={Math.round(weatherData.main.feels_like)}
+						wind={weatherData.wind.speed}
+						min={Math.round(weatherData.main.temp_min)}
+						max={Math.round(weatherData.main.temp_max)}
+					/>
 
 				</ScrollView >
 			</View>
